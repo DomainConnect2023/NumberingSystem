@@ -2,6 +2,7 @@ import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import DashboardScreen from './DashboardPage';
+import ProfileScreen from './ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -28,7 +29,7 @@ const TabNavigation = () => {
         })}
       >
         <Tab.Screen options={{ unmountOnBlur: true, }} name="Dashboard" component={DashboardScreen} />
-        {/* <Tab.Screen options={{ unmountOnBlur: true, }} name="Dashboardtest" component={DashboardtestScreen} /> */}
+        {/* <Tab.Screen options={{ unmountOnBlur: true, }} name="Profile" component={ProfileScreen} /> */}
       </Tab.Navigator>
   );
 }

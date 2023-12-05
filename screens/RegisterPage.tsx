@@ -13,6 +13,7 @@ import { URLAccess } from '../objects/URLAccess';
 import Snackbar from 'react-native-snackbar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoginScreen from './LoginPage';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const RegisterScreen = () => {
     const navigation = useNavigation();
@@ -33,31 +34,41 @@ const RegisterScreen = () => {
     const registerUserAPI = async() => {
         if(password!="" && password==retypePass && username!="" && username.length<=5){
 
-            const formData = new FormData();
+            // const formData = new FormData();
             
-            const jsonData: RegisterUserData = {
-                "Code": username as string,
-                "Password": password as string,
-                "IMEI": IMEI as string,
-            };
+            // const jsonData: RegisterUserData = {
+            //     "Code": username as string,
+            //     "Password": password as string,
+            //     "IMEI": IMEI as string,
+            // };
 
-            for (const key in jsonData) {
-                formData.append(key, jsonData[key]);
-            }
+            // for (const key in jsonData) {
+            //     formData.append(key, jsonData[key]);
+            // }
             
-            await axios.post(URLAccess.registerUserFunction, jsonData).then(async response => {
-                console.log(response.data);
-                if(response.data.isSuccess==true){
-                    AsyncStorage.setItem('MobileUserCode', username);
-                    navigation.navigate(RegisterScreen2 as never);
-                    // navigation.navigate(LoginScreen as never);
-                    // Snackbar.show({
-                    //     text: "Register successfully.",
-                    //     duration: Snackbar.LENGTH_SHORT,
-                    // });
+            // await axios.post(URLAccess.registerUserFunction, jsonData).then(async response => {
+            await RNFetchBlob.config({
+                trusty: true
+            })
+            .fetch('POST', URLAccess.registerUserFunction,{
+                    "Content-Type": "application/json",  
+                }, JSON.stringify({
+                    "Code": username as string,
+                    "Password": password as string,
+                    "IMEI": IMEI as string,
+                }),
+            ).then((response) => {
+                if(response.json().isSuccess==true){
+                    // AsyncStorage.setItem('MobileUserCode', username);
+                    // navigation.navigate(RegisterScreen2 as never);
+                    navigation.navigate(LoginScreen as never);
+                    Snackbar.show({
+                        text: "Register successfully.",
+                        duration: Snackbar.LENGTH_SHORT,
+                    });
                 }else{
                     Snackbar.show({
-                        text: response.data.message,
+                        text: response.json().message,
                         duration: Snackbar.LENGTH_SHORT,
                     });
                 }
@@ -80,13 +91,15 @@ const RegisterScreen = () => {
             <KeyboardAvoidWrapper>
             <View style={css.mainView}>
                 <Ionicons name="arrow-back-circle-outline" size={34} color="#FFF" onPress={()=>navigation.goBack()} style={{marginBottom:5,marginLeft:20}} />
+                <View style={css.HeaderView}>
+                    <Text style={css.PageName}>Register</Text>
+                </View>
             </View>
             <View style={css.container}>
                 <Image
                 source={ImagesAssets.registerImage}
                 style={{width: 200, height: 200}}
                 />
-                <Text style={{color:"#404040",fontWeight:"bold",fontSize:20}}>Register</Text>
 
                 {/* User Detail */}
                 <View style={css.row}>

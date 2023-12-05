@@ -16,6 +16,7 @@ import { URLAccess } from '../objects/URLAccess';
 import https from 'https';
 import { Buffer } from 'buffer';
 import DashboardScreen from './DashboardPage';
+import RNFetchBlob from 'rn-fetch-blob';
 
 type UserData = {
     Code: string;
@@ -26,32 +27,42 @@ type UserData = {
 const LoginScreen = () => {
     const navigation = useNavigation();
         
-    const [username, setUserName] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUserName] = useState('yeong');
+    const [password, setPassword] = useState('1234');
     const inputRef = React.createRef<TextInput>();
 
     const loginAPI = async() => {
-        const formData = new FormData();
+        // const formData = new FormData();
         
-        const jsonData: UserData = {
-            "Code": username as string,
-            "Password": password as string,
-        };
+        // const jsonData: UserData = {
+        //     "Code": username as string,
+        //     "Password": password as string,
+        // };
 
-        for (const key in jsonData) {
-            formData.append(key, jsonData[key]);
-        }
+        // for (const key in jsonData) {
+        //     formData.append(key, jsonData[key]);
+        // }
 
-        await axios.post(URLAccess.loginFunction, jsonData).then(async response => {
-            if(response.data.isSuccess==true){
-                AsyncStorage.setItem('refNo', response.data.refNo);
-                setUserName("");
-                setPassword("");
-                navigation.navigate(DashboardScreen as never);
+        // await axios.post(URLAccess.loginFunction, jsonData).then(async response => {
+        await RNFetchBlob.config({
+            trusty: true
+        })
+        .fetch('POST', URLAccess.loginFunction,{
+                "Content-Type": "application/json",  
+            }, JSON.stringify({
+                "Code": username as string,
+                "Password": password as string,
+            }),
+        ).then((response) => {
+            if(response.json().isSuccess==true){
+                AsyncStorage.setItem('MobileUserCode', username);
+                // setUserName("");
+                // setPassword("");
+                navigation.navigate(TabNavigation as never);
             }else{
-                console.log(response.data.message);
+                console.log(response.json().message);
                 Snackbar.show({
-                    text: response.data.message,
+                    text: response.json().message,
                     duration: Snackbar.LENGTH_SHORT,
                 });
             }
@@ -63,6 +74,7 @@ const LoginScreen = () => {
                 duration: Snackbar.LENGTH_SHORT,
             });
         });
+        // navigation.navigate(TabNavigation as never);
     };
 
   return (
@@ -75,7 +87,7 @@ const LoginScreen = () => {
                 />
                 <View style={styles.subcontainer}>
                     <View style={styles.Icon}>
-                        <Ionicons name={"person" ?? ""} size={40} color={"#EC5800"} />
+                        <Ionicons name={"person" ?? ""} size={40} color={"#033B6B"} />
                     </View>
                     <TextInput
                         style={styles.Input}
@@ -88,7 +100,7 @@ const LoginScreen = () => {
                 </View>
                 <View style={styles.subcontainer}>
                     <View style={styles.Icon}>
-                        <Ionicons  name={"key-sharp" ?? ""} size={40} color={"#EC5800"} />
+                        <Ionicons  name={"key-sharp" ?? ""} size={40} color={"#033B6B"} />
                     </View>
                     <TextInput
                         style={styles.Input}

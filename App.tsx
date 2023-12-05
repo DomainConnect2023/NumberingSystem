@@ -7,6 +7,8 @@ import RegisterScreen from './screens/RegisterPage';
 import RegisterScreen2 from './screens/RegisterPage2';
 import LoginScreen from './screens/LoginPage';
 import DashboardScreen from './screens/DashboardPage';
+import ViewImageScreen  from './screens/ViewImageScreen';
+import ProfileScreen from './screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +24,8 @@ function App(): JSX.Element {
           <Stack.Screen name="RegisterScreen2" component={RegisterScreen2} />
           <Stack.Screen name="DashboardScreen" component={DashboardScreen} />
           <Stack.Screen name="TabNavigation" component={TabNavigationScreen} />
+          <Stack.Screen name="ViewImageScreen" component={ViewImageScreen} />
+          <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

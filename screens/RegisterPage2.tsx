@@ -12,12 +12,15 @@ import LoginScreen from './LoginPage';
 import { css } from '../objects/commonCSS';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RegisterDriverData } from '../objects/objects';
+import TabNavigation from './TabNavigation';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const RegisterScreen2 = () => {
     const navigation = useNavigation();
 
     const inputDriver = React.createRef<TextInput>();
     const inputIC = React.createRef<TextInput>();
+    const inputCompany = React.createRef<TextInput>();
     
     const [username, setUserName] = useState('');
     const [viewName, setViewName] = useState(false);
@@ -28,39 +31,51 @@ const RegisterScreen2 = () => {
     const [verhicleNo, setVehicleNo] = useState('');
     const [viewVehicleNo, setViewVehicleNo] = useState(false);
 
-
-    const goBack = () => {
-        navigation.goBack();
-    }
+    const [companyName, setCompanyName] = useState('');
 
     const registerDriverAPI = async() => { 
         var MobileUserCode = await AsyncStorage.getItem('MobileUserCode');
-        const ICType = personIC.substring(0,6)+"-"+personIC.substring(6,8)+"-"+personIC.substring(8,12)
         
-        if(verhicleNo!="" && personIC!="" && username!="" && ICType.length!=12){
-            const formData = new FormData();
-            
-            const jsonData: RegisterDriverData = {
-                "Lorry": verhicleNo as string,
-                "Driver": username as string,
-                "IC": ICType as string,
-                "MobileUserCode": MobileUserCode as string,
-            };
+        if(verhicleNo!="" && personIC!="" && username!="" && personIC.length==12){
 
-            for (const key in jsonData) {
-                formData.append(key, jsonData[key]);
-            }
+            const ICType = personIC.substring(0,6)+"-"+personIC.substring(6,8)+"-"+personIC.substring(8,12);
             
-            await axios.post(URLAccess.registerDriverFunction, jsonData).then(async response => {
-                if(response.data.isSuccess==true){
-                    navigation.navigate(LoginScreen as never);
+            // const formData = new FormData();
+            // const jsonData: RegisterDriverData = {
+            //     "Lorry": verhicleNo as string,
+            //     "Driver": username as string,
+            //     "IC": ICType as string,
+            //     "CompanyName": companyName as string,
+            //     "MobileUserCode": MobileUserCode as string,
+            // };
+
+            // for (const key in jsonData) {
+            //     formData.append(key, jsonData[key]);
+            // }
+            
+            // await axios.post(URLAccess.registerDriverFunction, jsonData).then(async response => {
+            await RNFetchBlob.config({
+                trusty: true
+            })
+            .fetch('POST', URLAccess.registerDriverFunction,{
+                    "Content-Type": "application/json",  
+                }, JSON.stringify({
+                    "Lorry": verhicleNo as string,
+                    "Driver": username as string,
+                    "IC": ICType as string,
+                    "CompanyName": companyName as string,
+                    "MobileUserCode": MobileUserCode as string,
+                }),
+            ).then((response) => {
+                if(response.json().isSuccess==true){
+                    navigation.navigate("TabNavigation" as never);
                     Snackbar.show({
-                        text: "Register successfully.",
+                        text: "Register Driver successfully.",
                         duration: Snackbar.LENGTH_SHORT,
                     });
                 }else{
                     Snackbar.show({
-                        text: response.data.message,
+                        text: response.json().message,
                         duration: Snackbar.LENGTH_SHORT,
                     });
                 }
@@ -82,18 +97,23 @@ const RegisterScreen2 = () => {
     <MainContainer>
         <KeyboardAvoidWrapper>
         <View style={css.mainView}>
-            <Ionicons name="arrow-back-circle-outline" size={34} color="white" onPress={()=>goBack()} style={{marginBottom:5,marginLeft:20}} />
+            <Ionicons name="arrow-back-circle-outline" size={34} color="white" 
+            onPress={()=>navigation.navigate(TabNavigation as never)} 
+            style={{marginBottom:5,marginLeft:20}} />
+            {/* <Ionicons name="arrow-back-circle-outline" size={34} color="white" onPress={()=>goBack()} style={{marginBottom:5,marginLeft:20}} /> */}
+            <View style={css.HeaderView}>
+                <Text style={css.PageName}>Register Driver</Text>
+            </View>
         </View>
         <View style={css.container}>
             <Image
             source={ImagesAssets.registerImage}
             style={{width: 200, height: 200}}
             />
-            <Text style={{color:"#404040",fontWeight:"bold",fontSize:20}}>Register Driver</Text>
 
             {/* Car Detail */}
             <View style={css.row}>
-                <Text style={css.inputText}>Car Number: <Text style={{color:"red"}}>*</Text></Text>
+                <Text style={css.inputText}>Lorry Number: <Text style={{color:"red"}}>*</Text></Text>
                 {viewVehicleNo==true && verhicleNo=="" ? (
                 <TextInput
                     style={[css.input,{borderColor:"#FF0606"}]}
@@ -166,21 +186,23 @@ const RegisterScreen2 = () => {
                 <TextInput
                     style={[css.input,{borderColor:"#FF0606"}]}
                     placeholder="IC Number"
+                    keyboardType = 'number-pad'
                     value={personIC}
                     ref={inputIC}
                     onChangeText={setPersonIC}
-                    onSubmitEditing={() => setViewPersonIC(true)}
+                    onSubmitEditing={() => [setViewPersonIC(true),inputCompany.current?.focus()]}
                     placeholderTextColor="#11182744"
                 />
                 ) : (
                 <TextInput
                     style={[css.input,{borderColor:"#11182744",marginBottom:10}]}
                     placeholder="IC Number"
+                    keyboardType = 'number-pad'
                     value={personIC}
                     ref={inputIC}
                     onChangeText={setPersonIC}
                     onPressIn={()=>{setViewPersonIC(true)}}
-                    onSubmitEditing={() => setViewPersonIC(true)}
+                    onSubmitEditing={() => [setViewPersonIC(true),inputCompany.current?.focus()]}
                     placeholderTextColor="#11182744"
                 />
                 ) }
@@ -192,7 +214,7 @@ const RegisterScreen2 = () => {
                     <Text style={{color:"#FF0606",width:'60%',fontSize:10}}>Can't be empty!</Text>
                 </View>
             ):(
-                personIC.length!=12 ? (
+                viewPersonIC==true && personIC.length!=12 ? (
                     <View style={[css.row,{marginBottom:10,}]}>
                         <Text style={css.inputText}></Text>
                         <Text style={{color:"#FF0606",width:'60%',fontSize:10}}>IC format is invalid.</Text>
@@ -202,6 +224,20 @@ const RegisterScreen2 = () => {
                 )
             )}
             {/* End IC */}
+
+            {/* Comany Name */}
+            <View style={css.row}>
+                <Text style={css.inputText}>Company Name: </Text>
+                <TextInput
+                    style={[css.input,{borderColor:"#11182744",marginBottom:10}]}
+                    placeholder="Company Name"
+                    value={companyName}
+                    ref={inputCompany}
+                    onChangeText={setCompanyName}
+                    placeholderTextColor="#11182744"
+                />
+            </View>
+            {/* End Company Name */}
             
             <Pressable style={css.button} onPress={()=>{registerDriverAPI()}}>
                 <Text style={css.text}>Complete</Text>

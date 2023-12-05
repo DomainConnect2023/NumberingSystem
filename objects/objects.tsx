@@ -1,6 +1,12 @@
 import { Text, View } from "react-native";
 import { css } from "./commonCSS";
 
+export type RefNoData = {
+    RefNo: string;
+    CompanyName: string;
+    [key: string]: string;
+};
+
 export type RegisterUserData = {
     Code: string;
     Password: string;

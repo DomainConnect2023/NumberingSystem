@@ -1,4 +1,11 @@
 {
   "name": "SengHiap_PreRegister",
-  "displayName": "SengHiap_PreRegister"
+  "displayName": "SengHiap_PreRegister",
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "b405de1c-c985-4f7b-9873-6c2807372771"
+      }
+    }
+  }
 }
