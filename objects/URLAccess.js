@@ -1,10 +1,10 @@
 export const URLAccess = {
-    // userFunction: `https://192.168.0.123:43210/App/Login`,
 
-    loginFunction: `http://192.168.1.123:43210/App/Login`,
-    registerUserFunction: `http://192.168.1.123:43210/App/RegisterUser`,
-    registerDriverFunction: `http://192.168.1.123:43210/App/RegisterDriver`,
-    userFunction: `http://192.168.1.123:43210/App/Login`,
-    getDriverFunction: `http://192.168.1.123:43210/App/GetDriverInfo?refNo=`,
-    editDriverFunction: `http://192.168.1.123:43210/App/EditDriver`,
+    loginFunction: `https://192.168.1.144:43210/App/Login`,
+    registerUserFunction: `https://192.168.1.144:43210/App/RegisterUser`,
+    registerDriverFunction: `https://192.168.1.144:43210/App/RegisterDriver`,
+    userFunction: `https://192.168.1.144:43210/App/Login`,
+    getDriverFunction: `https://192.168.1.144:43210/App/GetDriverInfo?refNo=`,
+    editDriverFunction: `https://192.168.1.144:43210/App/EditDriver`,
+    getRefNoFunction: `https://192.168.1.144:43210/App/GetUserRefNoCollection?userCode=`,
 }

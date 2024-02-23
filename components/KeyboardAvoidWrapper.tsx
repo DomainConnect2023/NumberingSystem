@@ -7,7 +7,7 @@ const KeyboardAvoidWrapper: React.FC<IProps> = ({ children }) => {
     <KeyboardAvoidingView
       style={styles.settheKeyboardView}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={60}
+      // keyboardVerticalOffset={60}
     >
       <ScrollView style={styles.setScrollView} showsVerticalScrollIndicator={false}>
         <Pressable onPress={Keyboard.dismiss}>{children}</Pressable>

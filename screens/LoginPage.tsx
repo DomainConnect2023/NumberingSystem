@@ -1,49 +1,39 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Dimensions, Image, Linking, Modal, Platform, Pressable, TouchableOpacity } from 'react-native';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { Dimensions, Image, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput as TextInputs } from 'react-native';
 import KeyboardAvoidWrapper from '../components/KeyboardAvoidWrapper';
 import MainContainer from '../components/MainContainer';
 import { useNavigation } from '@react-navigation/native';
 import RegisterScreen from './RegisterPage';
-import { ImagesAssets } from '../objects/images';
 import TabNavigation from './TabNavigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { setCredentials } from '../components/keychainService';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import Snackbar from 'react-native-snackbar';
 import { URLAccess } from '../objects/URLAccess';
-import https from 'https';
-import { Buffer } from 'buffer';
-import DashboardScreen from './DashboardPage';
 import RNFetchBlob from 'rn-fetch-blob';
+import { styles } from '../objects/commonCSS';
+import { TextInput } from 'react-native-paper';
+import Octicons from 'react-native-vector-icons/Octicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-type UserData = {
-    Code: string;
-    Password: string;
-    [key: string]: string;
-};
 
 const LoginScreen = () => {
     const navigation = useNavigation();
+    const [ishide, setishide] = useState(true);
         
-    const [username, setUserName] = useState('yeong');
-    const [password, setPassword] = useState('1234');
-    const inputRef = React.createRef<TextInput>();
+    const [username, setUserName] = useState('');
+    const [password, setPassword] = useState('');
+    const inputRef = React.createRef<TextInputs>();
+
+    useEffect(()=> {
+        (async()=> {
+            if (__DEV__) {
+                setUserName("aaaa");
+                setPassword("Aaaa");
+            }
+        })();
+    }, [])
 
     const loginAPI = async() => {
-        // const formData = new FormData();
-        
-        // const jsonData: UserData = {
-        //     "Code": username as string,
-        //     "Password": password as string,
-        // };
-
-        // for (const key in jsonData) {
-        //     formData.append(key, jsonData[key]);
-        // }
-
-        // await axios.post(URLAccess.loginFunction, jsonData).then(async response => {
         await RNFetchBlob.config({
             trusty: true
         })
@@ -53,11 +43,11 @@ const LoginScreen = () => {
                 "Code": username as string,
                 "Password": password as string,
             }),
-        ).then((response) => {
+        ).then(async (response) => {
             if(response.json().isSuccess==true){
                 AsyncStorage.setItem('MobileUserCode', username);
-                // setUserName("");
-                // setPassword("");
+                setUserName("");
+                setPassword("");
                 navigation.navigate(TabNavigation as never);
             }else{
                 console.log(response.json().message);
@@ -66,7 +56,6 @@ const LoginScreen = () => {
                     duration: Snackbar.LENGTH_SHORT,
                 });
             }
-            
         }).catch(error => {
             console.log(error);
             Snackbar.show({
@@ -74,144 +63,102 @@ const LoginScreen = () => {
                 duration: Snackbar.LENGTH_SHORT,
             });
         });
-        // navigation.navigate(TabNavigation as never);
     };
 
   return (
     <MainContainer>
         <KeyboardAvoidWrapper>
-            <View style={styles.container}>
-                <Image
-                source={ImagesAssets.logoImage}
-                style={{width: 250, height: 250, margin:50}}
-                />
-                <View style={styles.subcontainer}>
-                    <View style={styles.Icon}>
-                        <Ionicons name={"person" ?? ""} size={40} color={"#033B6B"} />
-                    </View>
-                    <TextInput
-                        style={styles.Input}
-                        onSubmitEditing={() => inputRef.current?.focus()}
-                        placeholder="User Name"
-                        value={username}
-                        onChangeText={setUserName}
-                    />
-                    
+            {/* Header */}
+            <View style={{ height: Dimensions.get("screen").height / 100 * 90 }}>
+                <View style={{ flex: 0.3, flexDirection: "row" }}>
+                    <Image source={require('../assets/logo.png')} style={{ flex: 2, height: Dimensions.get("screen").height / 100 * 15, width: 120, resizeMode: 'contain', alignSelf: "center" }} />
+                    <Text style={styles.Header}>DOMAIN CONNECT</Text>
                 </View>
-                <View style={styles.subcontainer}>
-                    <View style={styles.Icon}>
-                        <Ionicons  name={"key-sharp" ?? ""} size={40} color={"#033B6B"} />
+
+                {/*End Header */}
+                <View style={{ flex: 1 }}>
+                    <View style={{ justifyContent: "flex-end", width: "90%", alignSelf: "center", marginTop: 30 }}>
+                        <Text style={styles.fontLogin}>Login</Text>
+                        <Text style={styles.fontsmall}>Enter Your Credential to Log in</Text>
                     </View>
-                    <TextInput
-                        style={styles.Input}
-                        ref={inputRef}
-                        placeholder="Password"
-                        secureTextEntry
-                        value={password}
-                        onChangeText={setPassword}
-                    />
+                    {/* Login Information */}
+                    <View style={styles.InputRange}>
+                        <TextInput
+                            style={styles.Textinput}
+                            mode="outlined"
+                            label="username"
+                            value={username}
+                            onChangeText={setUserName}
+                            onSubmitEditing={() => inputRef.current?.focus()}
+                        />
+                    </View>
+                    <View style={styles.InputRange}>
+                        <TouchableOpacity style={{ position: "absolute", alignSelf: "flex-end", margin: 30, zIndex: 10, paddingRight: 10 }}
+                            onPress={() => {
+                                if (ishide == (true)) {
+                                    setishide(false)
+                                } else {
+                                    setishide(true)
+                                }
+                            }}>
+                            {ishide == true ?
+                                (
+                                    <Octicons name="eye" size={40} style={{}} />
+                                ) : (
+                                    <Octicons name="eye-closed" size={40} style={{}} />
+                                )}
+
+                        </TouchableOpacity>
+                        <TextInput
+                            style={styles.Textinput}
+                            secureTextEntry={ishide}
+                            mode="outlined"
+                            label="password"
+                            value={password}
+                            onChangeText={setPassword}
+                            ref={inputRef}
+                        />
+
+                    </View>
+                    <TouchableOpacity onPress={() => { }}>
+                        <Text style={{ textAlign: "right", width: "95%", fontWeight: "bold", fontSize: 14, }}>Forgot Password?</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.ButtonLogin} onPress={() => {loginAPI()}}>
+                        <Text style={styles.fonth2}>
+                            Log In
+                        </Text>
+                    </TouchableOpacity>
+                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                        <Text style={{ fontWeight: "bold", fontSize: 14, }}>Or Login With</Text>
+                        <View style={{ flexDirection:"row"}}>
+                            <View>
+                                <TouchableOpacity onPress={() => {}}>
+                                    <MaterialIcons name="fingerprint" size={65} style={{ marginTop: 20, padding: 20 }} />
+                                </TouchableOpacity>
+                            </View>
+                            <View>
+                                <TouchableOpacity onPress={() => {}}>
+                                    <MaterialIcons name="tag-faces" size={65} style={{ marginTop: 20, padding: 20 }} />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
                 </View>
-                <TouchableOpacity style={{width:"85%"}} onPress={() => {navigation.navigate(RegisterScreen as never)}}>
-                    <View>
-                        <Text style={styles.registerFont}>Register</Text>
-                    </View>
-                </TouchableOpacity>
-                <Pressable style={styles.button} onPress={()=>loginAPI()}>
-                    <Text style={styles.bttnText}>Login</Text>
-                </Pressable>
+                {/* End Login Information */}
+
+                {/* Footer */}
+                <View style={{ justifyContent: "flex-end",marginBottom:15 }}>
+                    <View style={styles.blackline} />
+                    <TouchableOpacity onPress={() => { navigation.navigate(RegisterScreen as never) }}>
+                        <Text style={styles.fonth2}>Don't have an Account? Sign Up</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* End Footer */}
             </View>
-            
         </KeyboardAvoidWrapper>
     </MainContainer>
   );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    subcontainer: {
-        width: "100%",
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    Input: {
-        width: '70%',
-        height: 70,
-        marginBottom: 10,
-        padding: 10,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        color: "#000",
-    },
-    Icon: {
-        width:"15%",
-        padding:5,
-        alignItems:"flex-end",
-        marginBottom: 10
-    },
-    button: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 32,
-        borderRadius: 4,
-        elevation: 3,
-        backgroundColor: 'black',
-        marginRight: 5,
-        marginLeft: 5,
-    },
-    bttnText: {
-        fontSize: 16,
-        lineHeight: 21,
-        fontWeight: 'bold',
-        letterSpacing: 0.25,
-        color: 'white',
-    },
-    textInput: { 
-        width: "80%", 
-        borderRadius: 5, 
-        paddingVertical: 8, 
-        paddingHorizontal: 16, 
-        borderColor: "rgba(0, 0, 0, 0.2)", 
-        borderWidth: 1, 
-    }, 
-    row: {
-        flex: 1,
-        flexDirection: "row",
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    dropdown: {
-        width: "70%",
-        height: 70,
-        marginBottom: 10,
-        padding: 10,
-        borderColor: 'gray',
-        borderWidth: 0.5,
-        borderRadius: 8,
-        paddingHorizontal: 8,
-    },
-    placeholderStyle: {
-        fontSize: 16,
-    },
-    selectedTextStyle: {
-        fontSize: 16,
-    },
-    iconStyle: {
-        width: 20,
-        height: 20,
-    },
-    inputSearchStyle: {
-        height: 40,
-        fontSize: 16,
-    },
-    registerFont: {
-        color: "blue",
-    },
-});
 
 export default LoginScreen;

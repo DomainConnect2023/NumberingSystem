@@ -1,66 +1,43 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Pressable, Image, Platform, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput as TextInputs, Image, TouchableOpacity, Dimensions } from 'react-native';
 import KeyboardAvoidWrapper from '../components/KeyboardAvoidWrapper';
 import MainContainer from '../components/MainContainer';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
 import Snackbar from 'react-native-snackbar';
 import { URLAccess } from '../objects/URLAccess';
-import { ImagesAssets } from '../objects/images';
-import LoginScreen from './LoginPage';
-import { css } from '../objects/commonCSS';
+import { styles } from '../objects/commonCSS';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { RegisterDriverData } from '../objects/objects';
-import TabNavigation from './TabNavigation';
 import RNFetchBlob from 'rn-fetch-blob';
+import { ProgressBar, TextInput } from 'react-native-paper';
 
 const RegisterScreen2 = () => {
     const navigation = useNavigation();
 
-    const inputDriver = React.createRef<TextInput>();
-    const inputIC = React.createRef<TextInput>();
-    const inputCompany = React.createRef<TextInput>();
+    const [stage, setstage] = useState(1);
+
+    const inputDriver = React.createRef<TextInputs>();
+    const inputIC = React.createRef<TextInputs>();
+    const inputCompany = React.createRef<TextInputs>();
     
     const [username, setUserName] = useState('');
-    const [viewName, setViewName] = useState(false);
-
     const [personIC, setPersonIC] = useState('');
-    const [viewPersonIC, setViewPersonIC] = useState(false);
-
     const [verhicleNo, setVehicleNo] = useState('');
-    const [viewVehicleNo, setViewVehicleNo] = useState(false);
-
     const [companyName, setCompanyName] = useState('');
 
     const registerDriverAPI = async() => { 
         var MobileUserCode = await AsyncStorage.getItem('MobileUserCode');
         
-        if(verhicleNo!="" && personIC!="" && username!="" && personIC.length==12){
+        if(verhicleNo!="" && username!="" && personIC.length==12){
 
             const ICType = personIC.substring(0,6)+"-"+personIC.substring(6,8)+"-"+personIC.substring(8,12);
             
-            // const formData = new FormData();
-            // const jsonData: RegisterDriverData = {
-            //     "Lorry": verhicleNo as string,
-            //     "Driver": username as string,
-            //     "IC": ICType as string,
-            //     "CompanyName": companyName as string,
-            //     "MobileUserCode": MobileUserCode as string,
-            // };
-
-            // for (const key in jsonData) {
-            //     formData.append(key, jsonData[key]);
-            // }
-            
-            // await axios.post(URLAccess.registerDriverFunction, jsonData).then(async response => {
             await RNFetchBlob.config({
                 trusty: true
             })
             .fetch('POST', URLAccess.registerDriverFunction,{
                     "Content-Type": "application/json",  
                 }, JSON.stringify({
-                    "Lorry": verhicleNo as string,
+                    "Lorry": verhicleNo.toUpperCase() as string,
                     "Driver": username as string,
                     "IC": ICType as string,
                     "CompanyName": companyName as string,
@@ -96,153 +73,141 @@ const RegisterScreen2 = () => {
   return (
     <MainContainer>
         <KeyboardAvoidWrapper>
-        <View style={css.mainView}>
-            <Ionicons name="arrow-back-circle-outline" size={34} color="white" 
-            onPress={()=>navigation.navigate(TabNavigation as never)} 
-            style={{marginBottom:5,marginLeft:20}} />
-            {/* <Ionicons name="arrow-back-circle-outline" size={34} color="white" onPress={()=>goBack()} style={{marginBottom:5,marginLeft:20}} /> */}
-            <View style={css.HeaderView}>
-                <Text style={css.PageName}>Register Driver</Text>
-            </View>
-        </View>
-        <View style={css.container}>
-            <Image
-            source={ImagesAssets.registerImage}
-            style={{width: 200, height: 200}}
-            />
-
-            {/* Car Detail */}
-            <View style={css.row}>
-                <Text style={css.inputText}>Lorry Number: <Text style={{color:"red"}}>*</Text></Text>
-                {viewVehicleNo==true && verhicleNo=="" ? (
-                <TextInput
-                    style={[css.input,{borderColor:"#FF0606"}]}
-                    placeholder="Lorry Number"
-                    value={verhicleNo}
-                    onChangeText={setVehicleNo}
-                    onSubmitEditing={() => inputDriver.current?.focus()}
-                    placeholderTextColor="#11182744"
-                />
-                ) : (
-                <TextInput
-                    style={[css.input,{borderColor:"#11182744",marginBottom:10}]}
-                    placeholder="Lorry Number"
-                    value={verhicleNo}
-                    onChangeText={setVehicleNo}
-                    onPressIn={()=>{setViewVehicleNo(true)}}
-                    onSubmitEditing={() => inputDriver.current?.focus()}
-                    placeholderTextColor="#11182744"
-                />
-                ) }
-            </View>
-
-            {(viewVehicleNo==true && verhicleNo=="") && (
-                <View style={[css.row,{marginBottom:10,}]}>
-                    <Text style={css.inputText}></Text>
-                    <Text style={{color:"#FF0606",width:'60%',fontSize:10}}>Can't be empty!</Text>
+            {/* Header */}
+            <View style={{ height: Dimensions.get("screen").height / 100 * 90 }}>
+                <View style={{ flex: 0.15, flexDirection: "row" }}>
+                    <Image source={require('../assets/logo.png')} style={{ flex: 2, height: Dimensions.get("screen").height / 100 * 10, width: 120, resizeMode: 'contain', alignSelf: "center" }} />
+                    <Text style={styles.Header}>DOMAIN CONNECT</Text>
                 </View>
-            )}
-            {/* End Car Detail */}
 
-            {/* Driver Detail */}
-            <View style={css.row}>
-                <Text style={css.inputText}>Driver Name: <Text style={{color:"red"}}>*</Text></Text>
-                {viewName==true && username=="" ? (
-                <TextInput
-                    style={[css.input,{borderColor:"#FF0606"}]}
-                    placeholder="Driver Name"
-                    value={username}
-                    ref={inputDriver}
-                    onChangeText={setUserName}
-                    onSubmitEditing={() => inputIC.current?.focus()}
-                    placeholderTextColor="#11182744"
-                />
-                ) : (
-                <TextInput
-                    style={[css.input,{borderColor:"#11182744",marginBottom:10}]}
-                    placeholder="Driver Name"
-                    value={username}
-                    ref={inputDriver}
-                    onChangeText={setUserName}
-                    onPressIn={()=>{setViewName(true)}}
-                    onSubmitEditing={() => inputIC.current?.focus()}
-                    placeholderTextColor="#11182744"
-                />
-                ) }
-            </View>
 
-            {(viewName==true && username=="") && (
-                <View style={[css.row,{marginBottom:10,}]}>
-                    <Text style={css.inputText}></Text>
-                    <Text style={[{color:"#FF0606",width:'60%',fontSize:10}]}>Can't be empty!</Text>
-                </View>
-            )}
-            {/* End Driver Detail */}
+                {/*End Header */}
 
-            {/* IC */}
-            <View style={css.row}>
-                <Text style={css.inputText}>Driver IC: <Text style={{color:"red"}}>*</Text></Text>
-                {(viewPersonIC==true && (personIC=="" || personIC.length!=12)) ? (
-                <TextInput
-                    style={[css.input,{borderColor:"#FF0606"}]}
-                    placeholder="IC Number"
-                    keyboardType = 'number-pad'
-                    value={personIC}
-                    ref={inputIC}
-                    onChangeText={setPersonIC}
-                    onSubmitEditing={() => [setViewPersonIC(true),inputCompany.current?.focus()]}
-                    placeholderTextColor="#11182744"
-                />
-                ) : (
-                <TextInput
-                    style={[css.input,{borderColor:"#11182744",marginBottom:10}]}
-                    placeholder="IC Number"
-                    keyboardType = 'number-pad'
-                    value={personIC}
-                    ref={inputIC}
-                    onChangeText={setPersonIC}
-                    onPressIn={()=>{setViewPersonIC(true)}}
-                    onSubmitEditing={() => [setViewPersonIC(true),inputCompany.current?.focus()]}
-                    placeholderTextColor="#11182744"
-                />
-                ) }
-            </View>
-
-            {(viewPersonIC==true && personIC=="") ? (
-                <View style={[css.row,{marginBottom:10,}]}>
-                    <Text style={css.inputText}></Text>
-                    <Text style={{color:"#FF0606",width:'60%',fontSize:10}}>Can't be empty!</Text>
-                </View>
-            ):(
-                viewPersonIC==true && personIC.length!=12 ? (
-                    <View style={[css.row,{marginBottom:10,}]}>
-                        <Text style={css.inputText}></Text>
-                        <Text style={{color:"#FF0606",width:'60%',fontSize:10}}>IC format is invalid.</Text>
+                <View style={{flex:1,}}>
+                    <View style={{ justifyContent: "flex-end", width: "90%", alignSelf: "center", marginTop: 30 }}>
+                        <Text style={styles.fontLogin}>QR Pass Registration</Text>
+                        {stage == 1 && <Text style={styles.fontsmall}>Enter Your Lorry Information to register</Text>}
+                        {stage == 2 && <Text style={styles.fontsmall}>Double Check</Text>}
                     </View>
-                ) : (
-                    <></>
-                )
-            )}
-            {/* End IC */}
+                    {/* Stage 1 information */}
 
-            {/* Comany Name */}
-            <View style={css.row}>
-                <Text style={css.inputText}>Company Name: </Text>
-                <TextInput
-                    style={[css.input,{borderColor:"#11182744",marginBottom:10}]}
-                    placeholder="Company Name"
-                    value={companyName}
-                    ref={inputCompany}
-                    onChangeText={setCompanyName}
-                    placeholderTextColor="#11182744"
-                />
+                    {stage == 1 &&
+                        <><View style={{ marginTop: 10, paddingTop: 10, width: "50%", alignSelf: "center", flexDirection: "row", justifyContent: "center" }}>
+                            <ProgressBar progress={1} color={"#1B2A62"} style={{ width: 50, height: 10, marginHorizontal: 10, borderRadius: 10 }} />
+                            <ProgressBar progress={0} color={"#1B2A62"} style={{ width: 50, height: 10, marginHorizontal: 10, borderRadius: 10 }} />
+                        </View>
+                        <View style={styles.InputRange}>
+                            <TextInput
+                                style={styles.Textinput}
+                                mode="outlined"
+                                label="Lorry Number" 
+                                value={verhicleNo}
+                                onChangeText={setVehicleNo}
+                                onSubmitEditing={() => inputDriver.current?.focus()} />
+                        </View>
+                        <View style={styles.InputRange}>
+                            <TextInput
+                                style={styles.Textinput}
+                                mode="outlined"
+                                label="Driver Name" 
+                                value={username}
+                                onChangeText={setUserName}
+                                ref={inputDriver}
+                                onSubmitEditing={() => inputIC.current?.focus()} />
+                        </View>
+                        <View style={styles.InputRange}>
+                            <TextInput
+                                style={styles.Textinput}
+                                mode="outlined"
+                                label="Driver IC" 
+                                value={personIC}
+                                onChangeText={setPersonIC}
+                                ref={inputIC}
+                                onSubmitEditing={() => inputCompany.current?.focus()} />
+                        </View>
+                        <View style={styles.InputRange}>
+                            <TextInput
+                                style={styles.Textinput}
+                                mode="outlined"
+                                label="Company Name" 
+                                value={companyName}
+                                onChangeText={setCompanyName}
+                                ref={inputCompany} />
+                        </View>
+                        <TouchableOpacity style={styles.ButtonLogin} onPress={() => { 
+                            if(verhicleNo!="" && username!="" && personIC.length==12){
+                                setstage(2); 
+                            }else{
+                                Snackbar.show({
+                                    text: "Please follow all the requirements.",
+                                    duration: Snackbar.LENGTH_SHORT,
+                                });
+                            }
+                        }}>
+                            <Text style={styles.fonth2}>
+                                Next
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.ButtonLogin,{marginTop:5}]} onPress={() => { navigation.goBack() }}>
+                            <Text style={styles.fonth2}>
+                                Back
+                            </Text>
+                        </TouchableOpacity></>}
+                        
+                    {/*End Stage 1*/}
+
+                    {/* Stage 2 */}
+                    {stage == 2 && <><View style={{ marginTop: 10, paddingTop: 10, width: "50%", alignSelf: "center", flexDirection: "row", justifyContent: "center" }}>
+                        <ProgressBar progress={0} color={"#1B2A62"} style={{ width: 50, height: 10, marginHorizontal: 10, borderRadius: 10 }} />
+                        <ProgressBar progress={1} color={"#1B2A62"} style={{ width: 50, height: 10, marginHorizontal: 10, borderRadius: 10 }} />
+                    </View>
+
+                    <View style={{backgroundColor: "#D9D9D9", width: "85%",height:"50%", alignSelf: "center",margin:10,borderRadius:5 }}>
+                        <Text style={{margin:15,fontWeight:"bold",fontSize:12}}>Confirm your Credential</Text>
+                        
+                        <View style={{flexDirection:"row"}}>
+                            <Text style={{margin:20,fontWeight:"bold",fontSize:12,flex:1}}>Lorry Number </Text>
+                            <Text style={{margin:20,fontWeight:"bold",fontSize:12}}>:</Text>
+                            <Text style={{margin:20,fontWeight:"bold",fontSize:12,paddingLeft:10,flex:1}}>{verhicleNo.toUpperCase()}</Text>
+                        </View>
+                        <View style={{flexDirection:"row"}}>
+                            <Text style={{margin:20,fontWeight:"bold",fontSize:12,flex:1}}>Driver Name </Text>
+                            <Text style={{margin:20,fontWeight:"bold",fontSize:12}}>:</Text>
+                            <Text style={{margin:20,fontWeight:"bold",fontSize:12,paddingLeft:10,flex:1}}>{username}</Text>
+                        </View>
+                        <View style={{flexDirection:"row"}}>
+                            <Text style={{margin:20,fontWeight:"bold",fontSize:12,flex:1}}>Driver IC</Text>  
+                            <Text style={{margin:20,fontWeight:"bold",fontSize:12}}>:</Text>
+                            <Text style={{margin:20,fontWeight:"bold",fontSize:12,paddingLeft:10,flex:1}}>{personIC.substring(0,6)+"-"+personIC.substring(6,8)+"-"+personIC.substring(8,12)}</Text>
+                        </View>
+                        <View style={{flexDirection:"row"}}>
+                            <Text style={{margin:20,fontWeight:"bold",fontSize:12,flex:1}}>Company Name</Text>  
+                            <Text style={{margin:20,fontWeight:"bold",fontSize:12}}>:</Text>
+                            <Text style={{margin:20,fontWeight:"bold",fontSize:12,paddingLeft:10,flex:1}}>{companyName}</Text>
+                        </View>
+                    </View>
+
+                    <TouchableOpacity style={[styles.ButtonLogin,{marginTop:5}]} onPress={() => { registerDriverAPI() }}>
+                        <Text style={styles.fonth2}>
+                            Register
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.ButtonLogin,{marginTop:5}]} onPress={() => { setstage(1); }}>
+                        <Text style={styles.fonth2}>
+                            Back
+                        </Text>
+                    </TouchableOpacity>
+                    </>}
+                </View>
+
+                {/* Footer */}
+                <View style={{ justifyContent: "flex-end" }}>
+                    <View style={styles.blackline} />
+                        <Text style={styles.fonth2}>@Copyright by Domain Connect</Text>
+                </View>
+
+                {/* End Footer */}
             </View>
-            {/* End Company Name */}
-            
-            <Pressable style={css.button} onPress={()=>{registerDriverAPI()}}>
-                <Text style={css.text}>Complete</Text>
-            </Pressable>
-        </View>
         </KeyboardAvoidWrapper>
     </MainContainer>
   );

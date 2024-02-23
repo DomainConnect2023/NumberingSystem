@@ -1,18 +1,19 @@
 import { Dimensions, StyleSheet } from "react-native";
+import { DefaultTheme } from 'react-native-paper';
 
 export const css = StyleSheet.create({
     container: {
         justifyContent: 'center',
         alignItems: 'center',
-        marginVertical: 10,
         padding: 20,
     },
     mainView:{
         width: '100%',
-        height: 80, 
+        height: Dimensions.get("screen").height/100*8, 
         flexDirection: 'row',
         alignItems: 'center', 
         backgroundColor: "#666699",
+        
     },
     HeaderView :{
         flex: 1, 
@@ -24,7 +25,8 @@ export const css = StyleSheet.create({
     },
     PageName: {
         color: "#FFFFFF",
-        fontSize: 22,
+        fontSize: 18,
+        fontWeight: "bold",
     },
     listThing: {
         width: 40,
@@ -33,45 +35,39 @@ export const css = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center',
         borderRadius: 20,
-        marginRight: 10,
-        marginLeft: 10,
+        marginRight: 15,
     },
     listItem: {
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#e0e0eb',
+        backgroundColor: '#E6E8EA',
         padding: 10,
         borderRadius: 10,
         marginVertical: 2,
         marginHorizontal: 5,
+        height: 80,
     },
     cardBody: {
         flexGrow: 1,
         paddingHorizontal: 12,
-        width: "95%",
     },
     textHeader: { 
-        flex: 1,
         fontSize: 14,
         color: '#000000',
         fontWeight: 'bold',
         marginBottom: 4,
-        width: "95%",
     },
     textDescription: {
+        fontStyle: "italic",
         fontSize: 12,
         marginBottom: 6,
     },
-    circle: {
-        width: 20,
-        height: 20,
-        borderRadius: 50, 
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    text: {
-        color: 'white',
+    textTitle: {
+        fontStyle: "italic",
+        fontSize:18, 
+        color:"black", 
+        fontWeight:"bold"
     },
     button: {
         width: "85%",
@@ -94,7 +90,7 @@ export const css = StyleSheet.create({
     },
     typeButton: {
         margin:5,
-        width:"60%",
+        width:"50%",
         height:30,
         alignItems: 'center',
         justifyContent: 'center',
@@ -139,16 +135,13 @@ export const css = StyleSheet.create({
         flexDirection: "row",
         justifyContent: 'center',
         alignItems: 'center',
-        paddingLeft:20,
-        paddingRight:20,
     },
     pressableCSS: {
-        width: '80%',
-        marginBottom: 10,
+        width: '40%',
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 8,
-        marginTop: 5
+        marginTop: 10,
     },
     subContainer: {
         justifyContent: 'flex-start',
@@ -156,13 +149,8 @@ export const css = StyleSheet.create({
         marginHorizontal: 5,
         marginVertical: 5,
     },
-    textTitle: {
-        fontSize:18, 
-        color:"black", 
-        fontWeight:"bold"
-    },
     inputText: {
-        width: "35%",
+        width: "30%",
         justifyContent: 'center',
         alignItems: 'center',
         color:"#404040",
@@ -174,6 +162,17 @@ export const css = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
         color: "#000",
+    },
+
+    circle: {
+        borderRadius: 10, 
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    text: {
+        color: "white",
+        fontSize: 18,
+        fontWeight: "bold",
     },
 });
 
@@ -196,6 +195,14 @@ export const datepickerCSS = StyleSheet.create({
     datePicker: {
         height: 120,
         marginTop: -10,
+    },
+    textInput: {
+        color: "#000", 
+        textAlign: "center", 
+        fontSize:14, 
+        fontWeight:"bold", 
+        height:25,
+        padding:0,
     },
 });
 
@@ -228,3 +235,104 @@ export const dropdownCSS = StyleSheet.create({
         borderRadius: 12,
     },
 });
+
+
+const whiteTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: 'white',
+    },
+  };
+
+
+  export const styles = StyleSheet.create({
+    //Welcome Page
+    Test:{
+        flex:1,
+        backgroundColor:"green"
+    },
+    Button:{
+        alignSelf:"center",
+        backgroundColor:"#D9D9D9",
+        marginBottom:10,
+        borderRadius:5,
+        width:"80%",
+        height:"30%",
+        alignItems:"center",
+        justifyContent:"center",
+    },
+    WelcomeView:{
+        flex:4,
+        backgroundColor:"white"
+    },
+    fonth1:{
+        fontWeight:"bold",
+        fontSize:20,
+        alignSelf:"center",
+        color:"black"
+    },
+    fonth2:{
+        fontWeight:"bold",
+        fontSize:16,
+        alignSelf:"center",
+        color:"black"
+    },
+    fonth3:{
+        alignSelf:"center",
+        fontSize:12,
+        color:"black"
+    },
+    // Login Page
+    Header:{
+        flex:2,
+        alignSelf:"center",
+        fontWeight:"bold",
+        fontSize:16,
+        color:"black"
+    },
+    fontLogin:{
+        marginLeft:10,
+        fontWeight:"bold",
+        fontSize:20,
+        alignSelf:"flex-start",
+        color:"black"
+    },
+    fontsmall:{
+        marginLeft:10,
+        marginTop:10,
+        fontWeight:"bold",
+        fontSize:12,
+        alignSelf:"flex-start"
+    },
+    blackline:{
+        width:"90%",
+        height:1,
+        backgroundColor:"black",
+        alignSelf: 'center',
+        marginBottom:5,
+    },
+    InputRange:{
+        width:"90%",
+        alignSelf:"center"
+    },
+    Textinput:{
+        alignSelf:"center",
+        marginTop:20,
+        width:"100%",
+        borderRadius:5,
+    },
+    ButtonLogin:{
+        alignSelf:"center",
+        backgroundColor:"#D9D9D9",
+        marginBottom:10,
+        borderRadius:5,
+        width:"80%",
+        height:"10%",
+        alignItems:"center",
+        justifyContent:"center",
+        marginTop:20,
+    },
+});
+
+export default whiteTheme;
